@@ -45,8 +45,6 @@ export const setLastChats = async (req, res, next) => {
         }
       })
 
-      console.log(dataToSend)
-
       res.status(201).json(dataToSend.lastChats)
     }
   } catch (error) {

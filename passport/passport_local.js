@@ -11,6 +11,8 @@ export default function verifyPassportLocal (username, password, done) {
       return done(null, false)
     }
 
+    console.log('usuari trobat per passport')
+
     return done(null, user)
   })
     .catch(err => {

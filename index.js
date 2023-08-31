@@ -9,8 +9,17 @@ import router from './Routers/index.js'
 import './passport/index.js'
 import { db } from './db/index.js'
 import cookieParser from 'cookie-parser'
+import { Server } from 'socket.io'
+import http from 'http'
 
 const app = express()
+const server = http.createServer(app)
+const io = new Server(server, {
+  cors: {
+    origin: 'http://127.0.0.1:5173',
+    credentials: true
+  }
+})
 dotenv.config()
 db()
 
@@ -72,14 +81,42 @@ app.use(session({
 app.use(passport.initialize())
 app.use(passport.session())
 
+// Configuració del socket.io
+
+io.engine.on('connection', (socket) => {
+  console.log('user connected on sokcet')
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected from socket')
+  })
+})
+/*
+app.use((req, res, next) => {
+  console.log('entro al use de app')
+  console.log(req.rawHeaders)
+  console.log(req.headers)
+  next()
+})
+
+io.engine.use((error, req, res, next) => {
+  console.log('entro en el use del io engine')
+  console.log('------------------------------------------------------------- \n\n')
+})
+
+app.use((req, res, next) => {
+  console.log('Despres del io engine')
+  next()
+}) */
+
 // Routers
 app.use('/api', router)
 
-app.use('/', (err, req, res, next) => {
+app.use((err, req, res, next) => {
   console.log(err)
 })
 
 // Aqui aniria el 404 i el error handling
-app.listen(process.env.PORT, () => {
+
+server.listen(process.env.PORT, () => {
   console.log('Server running on: ', process.env.PORT)
 })

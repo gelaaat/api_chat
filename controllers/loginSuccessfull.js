@@ -18,9 +18,7 @@ export const loginSuccessfull = async (req, res, next) => {
           model: 'User'
         }
       })
-    console.log(user)
 
-    console.log(user, req.user)
     res.status(200).json({
       username: user.username,
       email: user.email,
@@ -28,7 +26,7 @@ export const loginSuccessfull = async (req, res, next) => {
       pendingRequestChats: user.pendingRequestChats,
       sendedRequestChats: user.sendedRequestChats,
       image: user.image,
-      lastChatsMessage: user.lastChatsMessage,
+      lastChatsMessages: user.lastChatsMessages,
       lastChats: user.lastChats
     })
   } catch (error) {
