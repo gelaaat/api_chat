@@ -7,6 +7,7 @@ import { getChatMessages } from '../controllers/getChatMessages.js'
 import { sendMessage } from '../controllers/sendMessage.js'
 import { acceptRequestChat } from '../controllers/acceptChatRequest.js'
 import { loginSuccessfull } from '../controllers/loginSuccessfull.js'
+import { setLastChats } from '../controllers/setLastChats.js'
 
 const router = express.Router()
 
@@ -17,7 +18,7 @@ router.get('/failureLogin', (req, res, next) => {
   res.status(400).json({ message: 'Username or password are incorrect' })
 })
 
-router.delete('/logout', isAuth, (req, res, next) => {
+router.delete('/logout', isAuth, (req, res, next) => { // Afegir isAuth
   req.logOut(err => {
     if (err) { return next(err) }
     console.log('user logout correcte')
@@ -28,11 +29,12 @@ router.delete('/logout', isAuth, (req, res, next) => {
 router.post('/register-local', createUser)
 
 // Chats
-router.post('/addChat', isAuth, sendChatRequest)
-router.post('/acceptChatRequest', isAuth, acceptRequestChat)
+router.post('/addChat', sendChatRequest) // Afegir isAuth
+router.post('/acceptChatRequest', acceptRequestChat) // Afegir isAuth
 
 // Messages
-router.post('/sendMessage', isAuth, sendMessage)
-router.get('/getChatMessages', isAuth, getChatMessages)
+router.post('/sendMessage', sendMessage) // Afegir isAuth
+router.post('/setLastChat', setLastChats) // Afegir isAuth
+router.get('/getChatMessages/:chatId', getChatMessages) // Afegir isAuth
 
 export default router

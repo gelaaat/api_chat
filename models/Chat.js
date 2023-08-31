@@ -9,6 +9,10 @@ const ChatSchema = new Schema({
   messages: [{
     type: Schema.ObjectId,
     ref: 'Messages'
+  }],
+  lastMessage: [{
+    type: Schema.ObjectId,
+    ref: 'Messages'
   }]
 })
 
