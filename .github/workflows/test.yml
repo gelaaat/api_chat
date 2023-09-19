@@ -6,8 +6,9 @@ on:
       - master
 
 jobs:
-  runs-on: ubuntu-18.04
-  steps:
-   - name: Echo de mensaje
-   run: |
-     echo "Hola Arnau"
+  test:
+   runs-on: ubuntu-18.04
+   steps:
+     - name: Echo del mensaje
+       run: |
+         echo "Hola Arnau"
