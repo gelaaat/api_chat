@@ -11,12 +11,13 @@ import { db } from './db/index.js'
 import cookieParser from 'cookie-parser'
 import { Server } from 'socket.io'
 import http from 'http'
+import { emitMessageToClient } from './controllers/emitMessageToClient.js'
 
 const app = express()
 const server = http.createServer(app)
 const io = new Server(server, {
   cors: {
-    origin: 'http://127.0.0.1:5173',
+    origin: 'https://fts9l2zd-5173.uks1.devtunnels.ms', // 'http://127.0.0.1:5173',
     credentials: true
   }
 })
@@ -46,8 +47,9 @@ const corsOptions = {
   }
 } */
 
+// TODO: Canviar el cross-origin algo
 app.use(cors({
-  origin: 'http://127.0.0.1:5173',
+  origin: 'https://fts9l2zd-5173.uks1.devtunnels.ms', // 'http://127.0.0.1:5173',
   credentials: true
 }))
 
@@ -65,15 +67,15 @@ const sessionStore = MongoStore.create({
 })
 
 app.use(session({
+  name: 'cookieId',
   secret: process.env.SECRET_SESSION,
   resave: true,
   saveUninitialized: true,
   cookie: {
-    secure: false, // Es posa a true quan estiguem en produccio
+    secure: true, // Es posa a true quan estiguem en produccio o en https
     maxAge: 1000 * 60 * 60 * 24,
     httpOnly: true,
-    path: '/api',
-    sameSite: 'lax'
+    sameSite: 'none'
   },
   store: sessionStore
 }))
@@ -83,30 +85,44 @@ app.use(passport.session())
 
 // Configuració del socket.io
 
-io.engine.on('connection', (socket) => {
+io.engine.use((req, res, next) => { // Afegir els middlewares necessaris com isAuth
+  // console.log('entro en el use del io engine')
+  // console.log('-----')
+  next()
+})
+
+io.on('connection', (socket) => {
+  let conversationRoom
+
   console.log('user connected on sokcet')
 
+  socket.on('api/sendMessage', async (...message) => { // Array [message, idChat]
+    try {
+      const missatge = message[0]
+      const username = message[1]
+      conversationRoom = message[2]
+
+      console.log(missatge, conversationRoom)
+
+      socket.join(`${conversationRoom}`)
+
+      // TODO: Enviar només el nou missatge
+      const data = await emitMessageToClient(missatge, username, conversationRoom)
+      console.log(data)
+      io.to(`${conversationRoom}`).emit('packetFromServer', data)
+    } catch (error) {
+      console.log(error)
+    }
+  })
   socket.on('disconnect', () => {
     console.log('user disconnected from socket')
+    socket.leave(conversationRoom)
   })
 })
-/*
-app.use((req, res, next) => {
-  console.log('entro al use de app')
-  console.log(req.rawHeaders)
-  console.log(req.headers)
-  next()
-})
-
-io.engine.use((error, req, res, next) => {
-  console.log('entro en el use del io engine')
-  console.log('------------------------------------------------------------- \n\n')
-})
 
 app.use((req, res, next) => {
-  console.log('Despres del io engine')
   next()
-}) */
+})
 
 // Routers
 app.use('/api', router)

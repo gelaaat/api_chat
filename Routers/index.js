@@ -4,7 +4,6 @@ import { isAuth } from '../middlewares/isAuth.js'
 import { createUser } from '../controllers/createUser.js'
 import { sendChatRequest } from '../controllers/sendChatRequest.js'
 import { getChatMessages } from '../controllers/getChatMessages.js'
-import { sendMessage } from '../controllers/sendMessage.js'
 import { acceptRequestChat } from '../controllers/acceptChatRequest.js'
 import { loginSuccessfull } from '../controllers/loginSuccessfull.js'
 import { setLastChats } from '../controllers/setLastChats.js'
@@ -29,12 +28,11 @@ router.delete('/logout', isAuth, (req, res, next) => { // Afegir isAuth
 router.post('/register-local', createUser)
 
 // Chats
-router.post('/addChat', sendChatRequest) // Afegir isAuth
-router.post('/acceptChatRequest', acceptRequestChat) // Afegir isAuth
+router.post('/addChat', isAuth, sendChatRequest) // Afegir isAuth
+router.post('/acceptChatRequest', isAuth, acceptRequestChat) // Afegir isAuth
 
 // Messages
-router.post('/sendMessage', sendMessage) // Afegir isAuth
-router.post('/setLastChat', setLastChats) // Afegir isAuth
-router.get('/getChatMessages/:chatId', getChatMessages) // Afegir isAuth
+router.post('/setLastChat', isAuth, setLastChats) // Afegir isAuth
+router.get('/getChatMessages/:chatId', isAuth, getChatMessages) // Afegir isAuth
 
 export default router

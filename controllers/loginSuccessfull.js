@@ -29,6 +29,7 @@ export const loginSuccessfull = async (req, res, next) => {
       lastChatsMessages: user.lastChatsMessages,
       lastChats: user.lastChats
     })
+    console.log(req.headers)
   } catch (error) {
     console.log(error)
     res.status(500).json({

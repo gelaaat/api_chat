@@ -29,6 +29,7 @@ export const sendMessage = async (req, res, next) => {
 
     const chatToSend = await Chat.findById(chatId).populate({
       path: 'messages',
+      model: Messages.modelName,
       options: {
         // sort: { initialDate: 1 },
         populate: {
